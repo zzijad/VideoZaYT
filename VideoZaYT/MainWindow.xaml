@@ -1,0 +1,212 @@
+<Window x:Class="VideoZaYT.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="VideoZaYT — video za YouTube (ne Short)"
+        Height="760" Width="1000" MinHeight="600" MinWidth="820"
+        WindowStartupLocation="CenterScreen"
+        Icon="app.ico"
+        AllowDrop="True" Drop="Window_Drop" DragOver="Window_DragOver"
+        Closing="Window_Closing">
+
+    <Window.Resources>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="16,12" />
+            <Setter Property="Margin" Value="0,0,0,12" />
+        </Style>
+
+        <Style x:Key="CardTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+
+        <Style x:Key="Hint" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style x:Key="Lbl" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,12,0" />
+        </Style>
+
+        <Style x:Key="StatusCell" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+            <Setter Property="ToolTip" Value="{Binding Status}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding State}" Value="Error">
+                    <Setter Property="Foreground" Value="#D13438" />
+                    <Setter Property="FontWeight" Value="SemiBold" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding State}" Value="Done">
+                    <Setter Property="Foreground" Value="#2E9E2E" />
+                    <Setter Property="FontWeight" Value="SemiBold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20,16,20,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- ===================== Zaglavlje ===================== -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="VideoZaYT" FontSize="26" FontWeight="SemiBold" />
+            <TextBlock Style="{StaticResource Hint}" FontSize="13" Margin="0,2,0,0"
+                       Text="Vertikalni video (sa telefona ili Instagrama) pretvara u 16:9 (1920×1080), pa ga YouTube postavlja kao običan video, a ne kao Short." />
+        </StackPanel>
+
+        <!-- ===================== Dodavanje ===================== -->
+        <Border Grid.Row="1" Style="{StaticResource Card}">
+            <StackPanel>
+                <TextBlock Style="{StaticResource CardTitle}" Text="Dodaj video" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" x:Name="BtnFiles" Content="📂  Izaberi video fajl(ove)…"
+                            Padding="14,6" Click="BtnFiles_Click" Margin="0,0,16,0" />
+                    <TextBox Grid.Column="1" x:Name="TxtUrl" VerticalContentAlignment="Center"
+                             KeyDown="TxtUrl_KeyDown" TextChanged="TxtUrl_TextChanged"
+                             ToolTip="Nalepi Instagram link (reel, objava…) i pritisni Enter" />
+                    <TextBlock Grid.Column="1" x:Name="UrlPlaceholder" IsHitTestVisible="False" Margin="12,0,0,0"
+                               VerticalAlignment="Center"
+                               Text="Nalepi Instagram link ovde (npr. https://www.instagram.com/reel/…)"
+                               Style="{StaticResource Hint}" />
+                    <Button Grid.Column="2" x:Name="BtnUrl" Content="⬇  Preuzmi i sredi"
+                            Padding="14,6" Margin="8,0,0,0" Click="BtnUrl_Click" />
+                </Grid>
+                <TextBlock Style="{StaticResource Hint}" Margin="0,8,0,0"
+                           Text="Fajlove (ili link iz browsera) možeš i da prevučeš mišem na prozor. Obrada kreće odmah, a više videa ide redom." />
+            </StackPanel>
+        </Border>
+
+        <!-- ===================== Podešavanja ===================== -->
+        <Border Grid.Row="2" Style="{StaticResource Card}">
+            <StackPanel>
+                <TextBlock Style="{StaticResource CardTitle}" Text="Podešavanja" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="24" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource Lbl}" Text="Pozadina:" />
+                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="CmbBackground" SelectionChanged="Combo_Changed" Margin="0,0,0,8">
+                        <ComboBoxItem Content="Zamućena slika videa" />
+                        <ComboBoxItem Content="Crna" />
+                        <ComboBoxItem Content="Bela" />
+                    </ComboBox>
+
+                    <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource Lbl}" Text="Kvalitet:" />
+                    <ComboBox Grid.Row="0" Grid.Column="4" x:Name="CmbQuality" SelectionChanged="Combo_Changed" Margin="0,0,0,8">
+                        <ComboBoxItem Content="Visok (preporučeno za YouTube)" />
+                        <ComboBoxItem Content="Srednji" />
+                        <ComboBoxItem Content="Manji fajl" />
+                    </ComboBox>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Lbl}" Text="Instagram prijava:" />
+                    <ComboBox Grid.Row="1" Grid.Column="1" x:Name="CmbCookies" SelectionChanged="Cookies_Changed" Margin="0,0,0,8"
+                              ToolTip="Ako Instagram traži prijavu, program koristi tvoju prijavu iz izabranog browsera.">
+                        <ComboBoxItem Content="Bez prijave" />
+                        <ComboBoxItem Content="Iz Firefox-a (najpouzdanije)" />
+                        <ComboBoxItem Content="Iz Chrome-a" />
+                        <ComboBoxItem Content="Iz Edge-a" />
+                        <ComboBoxItem Content="Iz Brave-a" />
+                        <ComboBoxItem Content="Iz cookies.txt fajla…" />
+                    </ComboBox>
+
+                    <CheckBox Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" x:Name="ChkNvidia"
+                              Content="Koristi NVIDIA grafičku (brže; ako ne uspe, radi na procesoru)"
+                              Click="Setting_Changed" Margin="0,0,0,8" VerticalAlignment="Center" />
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource Lbl}" Text="Čuvanje:" />
+                    <Grid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" x:Name="ChkNextTo" Content="Fajlove pored originala" Click="Setting_Changed"
+                                  VerticalAlignment="Center" Margin="0,0,16,0"
+                                  ToolTip="Fajl sa računara se čuva u istom folderu kao original (ime_YT.mp4). Preuzeti videi uvek idu u folder desno." />
+                        <TextBox Grid.Column="1" x:Name="TxtOutput" IsReadOnly="True" VerticalContentAlignment="Center" />
+                        <Button Grid.Column="2" Content="Promeni…" Margin="8,0,0,0" Padding="12,5" Click="BtnOutput_Click" />
+                    </Grid>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- ===================== Lista ===================== -->
+        <Border Grid.Row="3" Style="{StaticResource Card}" Padding="8">
+            <ListView x:Name="LstJobs" BorderThickness="0" MouseDoubleClick="LstJobs_MouseDoubleClick"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Vrsta" Width="60" DisplayMemberBinding="{Binding Kind}" />
+                        <GridViewColumn Header="Video" Width="330">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Display}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Source}" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Napredak" Width="170">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ProgressBar Width="150" Height="6" Minimum="0" Maximum="100"
+                                                 Value="{Binding Progress, Mode=OneWay}"
+                                                 IsIndeterminate="{Binding IsIndeterminate, Mode=OneWay}" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Status" Width="340">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Status}" Style="{StaticResource StatusCell}" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Border>
+
+        <!-- ===================== Dno ===================== -->
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" x:Name="TxtStatus" Style="{StaticResource Hint}" VerticalAlignment="Center"
+                       Text="Dvoklik na gotov video otvara folder sa njim." />
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button x:Name="BtnCancel" Content="Otkaži" Padding="14,6" Margin="0,0,8,0" IsEnabled="False" Click="BtnCancel_Click" />
+                <Button Content="Očisti završene" Padding="14,6" Margin="0,0,8,0" Click="BtnClear_Click" />
+                <Button Content="📁  Otvori folder" Padding="14,6" Click="BtnOpenFolder_Click" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
